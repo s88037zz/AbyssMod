@@ -54,7 +54,7 @@ BepInEx/plugins/AbyssMod/cache/translations/
 
 ### 2. 下載 Release
 
-前往 [Releases](https://github.com/s88037zz/AbyssMod/releases) 頁面，找到最新版本（綠色 `Latest` 標識），展開 `Assets` 下載 `AbyssMod-v1.0.5.7z`。
+前往 [Releases](https://github.com/s88037zz/AbyssMod/releases) 頁面，找到最新版本（綠色 `Latest` 標識），展開 `Assets` 下載 `AbyssMod-v1.0.6.zip`。
 
 > ⚠️ 請下載 `.7z` 壓縮包，**不要**下載 `Source code`（那是原始碼，需要自行編譯）
 
@@ -336,7 +336,7 @@ translations/
 
 ### 打包 Release
 
-打包 `AbyssMod-v1.0.5.7z`，應包含以下路徑（相對遊戲根目錄）：
+打包 `AbyssMod-v1.0.6.zip`，應包含以下路徑（相對遊戲根目錄）：
 
 ```
 winhttp.dll
@@ -360,9 +360,9 @@ BepInEx/plugins/AbyssMod/fonts/
 發布流程：
 
 ```bash
-git tag v1.0.5
-git push origin v1.0.5
-# 在 GitHub Releases 建立 Release，上傳 AbyssMod-v1.0.5.7z
+git tag v1.0.6
+git push origin v1.0.6
+# 在 GitHub Releases 建立 Release，上傳 AbyssMod-v1.0.6.zip
 ```
 
 ---

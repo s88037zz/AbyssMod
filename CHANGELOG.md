@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] - 2026-06-21
+
+### 新增 / Added
+
+- **`other/` CDN 自動同步**：啟動時從 CDN 拉取 `other/{category}/` 譯文，合併至本機 cache（遠端同 key 優先，本機獨有 key 保留）
+- **`MachineTranslator.ReloadFromDisk()`**：CDN 同步完成後重新載入 other/ 記憶體快取
+- **`manifest.other` 可選雜湊欄位**：支援對 other/ 各子類別做 cache 驗證（可選）
+
+### 修復 / Fixed
+
+- **other/ 校對譯文需開啟機翻才顯示**：命中 other/ 快取時，即使 `[MachineTranslation] Enabled = false` 也會顯示已校對譯文
+
+---
+
 ## [1.0.5] - 2026-06-21
 
 ### 新增 / Added
