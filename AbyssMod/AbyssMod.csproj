@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--
+      設定遊戲根目錄路徑：
+        1. 推薦：設定環境變數 ABYSS_GAME_DIR 指向你的遊戲安裝目錄（與 .exe 同層）
+           例如：set ABYSS_GAME_DIR=D:\Games\ドットアビス
+        2. 備選：直接修改下方 <GameDir> 的值（僅限本機使用，不要提交到 git）
+    -->
+    <GameDir Condition="'$(ABYSS_GAME_DIR)' != ''">$(ABYSS_GAME_DIR)</GameDir>
+    <GameDir Condition="'$(ABYSS_GAME_DIR)' == ''">x:\DMM\dotabyss_cl</GameDir>
+    <Authors>Jitsu</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>AbyssMod</AssemblyName>
+    <Product>AbyssMod</Product>
+    <Version>1.0.5</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>AbyssMod</RootNamespace>
+    <BaseOutputPath>$(GameDir)\BepInEx\plugins\$(Product)</BaseOutputPath>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <GameDlls Include="$(GameDir)\BepInEx\interop\*.dll"></GameDlls>
+    <Reference Include="@(GameDlls)">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Utility">
+      <HintPath>$(GameDir)\BepInEx\plugins\AbyssMod\Utility.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+  </ItemGroup>
+</Project>
