@@ -56,7 +56,7 @@ BepInEx/plugins/AbyssMod/cache/translations/
 
 前往 [Releases](https://github.com/s88037zz/AbyssMod/releases) 頁面，找到最新版本（綠色 `Latest` 標識），展開 `Assets` 下載 `AbyssMod-v1.0.7.zip`。
 
-> ⚠️ 請下載 `.7z` 壓縮包，**不要**下載 `Source code`（那是原始碼，需要自行編譯）
+> ⚠️ 請下載 `.zip` 壓縮包，**不要**下載 `Source code`（那是原始碼，需要自行編譯）
 
 ### 3. 解壓到遊戲根目錄
 
@@ -65,10 +65,15 @@ BepInEx/plugins/AbyssMod/cache/translations/
 ```
 遊戲根目錄/
 ├── ドットアビス.exe
-├── winhttp.dll          ← 解壓後新增
-├── doorstop_config.ini  ← 解壓後新增
+├── dotnet/              ← 解壓後新增
+├── .doorstop_version
+├── changelog.txt
+├── winhttp.dll
+├── doorstop_config.ini
 └── BepInEx/
     ├── core/
+    ├── patchers/
+    ├── unity-libs/
     └── plugins/AbyssMod/
         ├── AbyssMod.dll
         ├── Utility.dll
@@ -336,17 +341,22 @@ translations/
 
 ### 打包 Release
 
-打包 `AbyssMod-v1.0.7.zip`，應包含以下路徑（相對遊戲根目錄）：
+打包 `AbyssMod-v1.0.7.zip`，解壓到遊戲根目錄（與 `.exe` 同層），應包含：
 
 ```
-winhttp.dll
+dotnet/
+.doorstop_version
+changelog.txt
 doorstop_config.ini
-BepInEx/core/
-BepInEx/patchers/
-BepInEx/unity-libs/
-BepInEx/plugins/AbyssMod/AbyssMod.dll
-BepInEx/plugins/AbyssMod/Utility.dll
-BepInEx/plugins/AbyssMod/fonts/
+winhttp.dll
+BepInEx/
+    core/
+    patchers/
+    unity-libs/
+    plugins/AbyssMod/
+        AbyssMod.dll
+        Utility.dll
+        fonts/
 ```
 
 **應排除**：
