@@ -33,8 +33,8 @@
 
 | Repo | 內容 | 說明 |
 |------|------|------|
-| **[YOUR_USERNAME/AbyssMod](https://github.com/YOUR_USERNAME/AbyssMod)** | 插件本體 C# 原始碼 | 此 repo，含 Release 下載 |
-| **[YOUR_USERNAME/dotabyss-translation](https://github.com/YOUR_USERNAME/dotabyss-translation)** | 劇情 / UI 翻譯 JSON | 啟動時從 CDN 自動下載 |
+| **[s88037zz/AbyssMod](https://github.com/s88037zz/AbyssMod)** | 插件本體 C# 原始碼 | 此 repo，含 Release 下載 |
+| **[s88037zz/dotabyss-translation](https://github.com/s88037zz/dotabyss-translation)** | 劇情 / UI 翻譯 JSON | 啟動時從 CDN 自動下載 |
 
 翻譯資料不包含在 Release 壓縮包內，插件首次啟動時會依 `AbyssMod.cfg` 的 `CDN` 設定自動下載到：
 
@@ -52,7 +52,7 @@ BepInEx/plugins/AbyssMod/cache/translations/
 
 ### 2. 下載 Release
 
-前往 [Releases](https://github.com/YOUR_USERNAME/AbyssMod/releases) 頁面，找到最新版本（綠色 `Latest` 標識），展開 `Assets` 下載 `AbyssMod-v1.0.5.7z`。
+前往 [Releases](https://github.com/s88037zz/AbyssMod/releases) 頁面，找到最新版本（綠色 `Latest` 標識），展開 `Assets` 下載 `AbyssMod-v1.0.5.7z`。
 
 > ⚠️ 請下載 `.7z` 壓縮包，**不要**下載 `Source code`（那是原始碼，需要自行編譯）
 
@@ -85,7 +85,7 @@ BepInEx/plugins/AbyssMod/cache/translations/
 
 ```ini
 [Translation]
-CDN      = https://raw.githubusercontent.com/YOUR_USERNAME/dotabyss-translation/main/translations
+CDN      = https://raw.githubusercontent.com/s88037zz/dotabyss-translation/main/translations
 Language = zh_Hant
 ```
 
@@ -239,7 +239,7 @@ Language = zh_Hant
 
 翻譯 JSON 存放於獨立 repo：
 
-**[YOUR_USERNAME/dotabyss-translation](https://github.com/YOUR_USERNAME/dotabyss-translation)**
+**[s88037zz/dotabyss-translation](https://github.com/s88037zz/dotabyss-translation)**
 
 目錄結構：
 
@@ -284,7 +284,7 @@ translations/
 <summary><b>無法連接 GitHub 下載翻譯</b></summary>
 <ul>
   <li>可使用 GitHub 鏡像加速站，如 <code>https://gh-proxy.com</code>，將 CDN 改為：<br>
-  <code>https://gh-proxy.com/https://raw.githubusercontent.com/YOUR_USERNAME/dotabyss-translation/main/translations</code></li>
+  <code>https://gh-proxy.com/https://raw.githubusercontent.com/s88037zz/dotabyss-translation/main/translations</code></li>
   <li>或將 CDN 改為 Gitee 等其他鏡像（需自行同步翻譯資料）</li>
 </ul>
 </details>
@@ -303,7 +303,7 @@ translations/
 
 <details>
 <summary><b>crash / 崩潰怎麼排查</b></summary>
-查看 <code>BepInEx\ErrorLog.log</code> 與 <code>BepInEx\LogOutput.log</code>，搜尋 <code>Exception</code> 或 <code>Stack overflow</code>，然後在 <a href="https://github.com/YOUR_USERNAME/AbyssMod/issues">Issues</a> 附上 log 回報。
+查看 <code>BepInEx\ErrorLog.log</code> 與 <code>BepInEx\LogOutput.log</code>，搜尋 <code>Exception</code> 或 <code>Stack overflow</code>，然後在 <a href="https://github.com/s88037zz/AbyssMod/issues">Issues</a> 附上 log 回報。
 </details>
 
 ---
@@ -368,7 +368,7 @@ git push origin v1.0.5
 ## 💬 社群
 
 - 海外詢問：添加 Discord 好友 `.lienchu9420`（Lienchu 恋曲）
-- Issues：[GitHub Issues](https://github.com/YOUR_USERNAME/AbyssMod/issues)
+- Issues：[GitHub Issues](https://github.com/s88037zz/AbyssMod/issues)
 
 ---
 
