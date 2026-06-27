@@ -58,5 +58,11 @@
     <EmbeddedResource Include="AbyssMod.master_mapping.json">
       <LogicalName>AbyssMod.master_mapping.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\TSCharacters.txt">
+      <LogicalName>AbyssMod.Resources.TSCharacters.txt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\TSPhrases.txt">
+      <LogicalName>AbyssMod.Resources.TSPhrases.txt</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
