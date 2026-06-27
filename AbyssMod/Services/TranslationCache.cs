@@ -37,6 +37,8 @@ namespace AbyssMod.Services
         private readonly string _cdn;
         private readonly string _cacheDir;
         private readonly string _language;
+        private readonly string _remoteLanguage;
+        private readonly bool _isFallbackMode;
         private readonly HttpClient _client;
         private Manifest _manifest;
 
@@ -72,6 +74,14 @@ namespace AbyssMod.Services
             _language = language;
             _client = client;
 
+            // 当请求简体 (zh_Hans) 但远程只有繁体 (zh_Hant) 时，
+            // 自动下载 zh_Hant 文件并转换为简体后缓存为 zh_Hans。
+            _isFallbackMode = string.Equals(
+                _language, "zh_Hans",
+                StringComparison.OrdinalIgnoreCase
+            );
+            _remoteLanguage = _isFallbackMode ? "zh_Hant" : _language;
+
             // 新结构按类型分目录，具体子目录在写文件时按需创建
             Directory.CreateDirectory(_cacheDir);
         }
@@ -96,7 +106,9 @@ namespace AbyssMod.Services
                 return;
             }
 
-            var url = TranslationPaths.BuildRemoteUrl(_cdn, TranslationPaths.Manifest, _language);
+            var url = TranslationPaths.BuildRemoteUrl(
+                _cdn, TranslationPaths.Manifest, _isFallbackMode ? _remoteLanguage : _language
+            );
             var path = TranslationPaths.BuildCachePath(
                 _cacheDir,
                 TranslationPaths.Manifest,
@@ -189,14 +201,17 @@ namespace AbyssMod.Services
                 category,
                 _language
             );
-            string remoteUrl = TranslationPaths.BuildLegacyAddOnRemoteUrl(_cdn, category, _language);
-            string expectedHash = GetAddOnManifestHash(category);
+            string remoteUrl = TranslationPaths.BuildLegacyAddOnRemoteUrl(
+                _cdn, category, _isFallbackMode ? _remoteLanguage : _language
+            );
+            // 回退模式下跳过哈希缓存验证
+            string expectedHash = _isFallbackMode ? null : GetAddOnManifestHash(category);
 
             var semaphore = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
             try
             {
-                if (expectedHash != null && File.Exists(legacyCachePath))
+                if (!_isFallbackMode && expectedHash != null && File.Exists(legacyCachePath))
                 {
                     string localHash = HashFile(legacyCachePath);
                     if (localHash == expectedHash)
@@ -214,8 +229,10 @@ namespace AbyssMod.Services
                     if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     {
                         // 过渡期：legacy 路径不存在时回退 add-on/ui_misc
-                        remoteUrl = TranslationPaths.BuildAddOnRemoteUrl(_cdn, category, _language);
-                        response = await _client.GetAsync(remoteUrl);
+                        var fallbackUrl = TranslationPaths.BuildAddOnRemoteUrl(
+                            _cdn, category, _isFallbackMode ? _remoteLanguage : _language
+                        );
+                        response = await _client.GetAsync(fallbackUrl);
                     }
 
                     if (!response.IsSuccessStatusCode)
@@ -231,6 +248,10 @@ namespace AbyssMod.Services
                     Logger.Warn($"legacy/add-on/{category} fetch failed: {e.Message}");
                     return;
                 }
+
+                // 回退模式：将远程获取的繁体值转换为简体
+                if (_isFallbackMode)
+                    ChineseConverter.ConvertDictionaryInPlace(remote);
 
                 Dictionary<string, string> local = File.Exists(legacyCachePath)
                     ? LoadFromFile(legacyCachePath) ?? new Dictionary<string, string>()
@@ -322,14 +343,17 @@ namespace AbyssMod.Services
         {
             string cacheKey  = $"{_language}/add-on/{category}";
             string cachePath = TranslationPaths.BuildAddOnCachePath(_cacheDir, category, _language);
-            string remoteUrl = TranslationPaths.BuildAddOnRemoteUrl(_cdn, category, _language);
-            string expectedHash = GetAddOnManifestHash(category);
+            string remoteUrl = TranslationPaths.BuildAddOnRemoteUrl(
+                _cdn, category, _isFallbackMode ? _remoteLanguage : _language
+            );
+            // 回退模式下跳过哈希缓存验证
+            string expectedHash = _isFallbackMode ? null : GetAddOnManifestHash(category);
 
             var semaphore = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
             try
             {
-                if (expectedHash != null && File.Exists(cachePath))
+                if (!_isFallbackMode && expectedHash != null && File.Exists(cachePath))
                 {
                     string localHash = HashFile(cachePath);
                     if (localHash == expectedHash)
@@ -362,6 +386,10 @@ namespace AbyssMod.Services
                     Logger.Warn($"add-on/{category} fetch failed: {e.Message}");
                     return;
                 }
+
+                // 回退模式：将远程获取的繁体值转换为简体
+                if (_isFallbackMode)
+                    ChineseConverter.ConvertDictionaryInPlace(remote);
 
                 Dictionary<string, string> local = File.Exists(cachePath)
                     ? LoadFromFile(cachePath) ?? new Dictionary<string, string>()
@@ -429,14 +457,17 @@ namespace AbyssMod.Services
         {
             string cacheKey  = $"{_language}/other/{category}";
             string cachePath = TranslationPaths.BuildOtherCachePath(_cacheDir, category, _language);
-            string remoteUrl = TranslationPaths.BuildOtherRemoteUrl(_cdn, category, _language);
-            string expectedHash = GetOtherManifestHash(category);
+            string remoteUrl = TranslationPaths.BuildOtherRemoteUrl(
+                _cdn, category, _isFallbackMode ? _remoteLanguage : _language
+            );
+            // 回退模式下跳过哈希缓存验证
+            string expectedHash = _isFallbackMode ? null : GetOtherManifestHash(category);
 
             var semaphore = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
             await semaphore.WaitAsync();
             try
             {
-                if (expectedHash != null && File.Exists(cachePath))
+                if (!_isFallbackMode && expectedHash != null && File.Exists(cachePath))
                 {
                     string localHash = HashFile(cachePath);
                     if (localHash == expectedHash)
@@ -469,6 +500,10 @@ namespace AbyssMod.Services
                     Logger.Warn($"other/{category} fetch failed: {e.Message}");
                     return;
                 }
+
+                // 回退模式：将远程获取的繁体值转换为简体
+                if (_isFallbackMode)
+                    ChineseConverter.ConvertDictionaryInPlace(remote);
 
                 Dictionary<string, string> local = File.Exists(cachePath)
                     ? LoadFromFile(cachePath) ?? new Dictionary<string, string>()
@@ -518,12 +553,38 @@ namespace AbyssMod.Services
                     Logger.Info($"Local-only category '{type}' loaded: {local?.Count ?? 0} entries");
                     return local;
                 }
+
+                // 回退模式：尝试从 zh_Hant 本地缓存加载并转为简体
+                if (_isFallbackMode)
+                {
+                    var hantPath = TranslationPaths.BuildCachePath(
+                        _cacheDir, type, _remoteLanguage, id
+                    );
+                    if (File.Exists(hantPath))
+                    {
+                        var hantData = LoadFromFile(hantPath);
+                        if (hantData != null && hantData.Count > 0)
+                        {
+                            var converted = ChineseConverter.ConvertDictionary(hantData);
+                            SaveToFile(cachePath, converted);
+                            Logger.Info(
+                                $"Local-only category '{type}' converted from {_remoteLanguage}: {converted.Count} entries"
+                            );
+                            return converted;
+                        }
+                    }
+                }
+
                 // 文件不存在视为空（未有人工翻译），返回空字典而非 null，避免 Warn 噪音
                 return new System.Collections.Generic.Dictionary<string, string>();
             }
 
-            string remoteUrl    = TranslationPaths.BuildRemoteUrl(_cdn, type, _language, id);
-            string expectedHash = GetManifestHash(type, id);
+            string remoteUrl    = TranslationPaths.BuildRemoteUrl(
+                _cdn, type, _isFallbackMode ? _remoteLanguage : _language, id
+            );
+            // 回退模式下：zh_Hant 清单的哈希不匹配转换后的 zh_Hans 缓存，
+            // 因此跳过哈希缓存验证，直接尝试从远程获取。
+            string expectedHash = _isFallbackMode ? null : GetManifestHash(type, id);
 
             // 序列化同一资源的并发加载
             var semaphore = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
@@ -562,6 +623,15 @@ namespace AbyssMod.Services
                 var data = await GetAsync<Dictionary<string, string>>(remoteUrl);
                 if (data != null)
                 {
+                    // 回退模式：将远程获取的繁体值统一转换为简体
+                    if (_isFallbackMode && data.Count > 0)
+                    {
+                        ChineseConverter.ConvertDictionaryInPlace(data);
+                        Logger.Info(
+                            $"Converted {data.Count} entries from {_remoteLanguage} to {_language} for '{type}'"
+                        );
+                    }
+
                     // ability_descriptions 尚无 manifest 哈希，且社群 repo 常领先 CDN；
                     // 合并而非覆盖，保留本机已有、远端尚未发布的条目。
                     if (type == TranslationPaths.AbilityDescriptions && File.Exists(cachePath))
